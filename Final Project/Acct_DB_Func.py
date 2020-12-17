@@ -5,65 +5,91 @@ import random as rdm
 conn = sqlite3.connect('Database\\book_keeping.sqlite')
 cur = conn.cursor()
 
-
 class Entry():
-    def __init__(self, in_ex, description, ymd, price, account, record_time, sub_id):
-        self.in_ex = in_ex  # income or expense?
-        self.description = description  # str
-        self.ymd = ymd  # Format: 2020-12-12
-        self.price = price
-        self.account = account  # cash / credit
-        self.record_time = record_time  # str: YYYY-MM-DD HH:MM:SS.SSS
-        self.sub_id = sub_id
+    #def __init__(self, in_ex, description, ymd, price, account, record_time, sub_id):
+    #def __init__(self):
+        #self.conn = sqlite3.connect('Database\\book_keeping.sqlite')
+        #self.cur = self.conn.cursor()
+        #self.in_ex = in_ex  # income or expense?
+        #self.description = description  # str
+        #self.ymd = ymd  # Format: 2020-12-12
+        #self.price = price
+        #self.account = account  # cash / credit
+        #self.record_time = record_time  # str: YYYY-MM-DD HH:MM:SS.SSS
+        #self.sub_id = sub_id
         #self.main_id = main_id
 
-    def parse_ymd(self):
+    def parse_ymd(self, ymd):
         '''
         returns a <class: datetime.datetime> object
         '''
-        ymd = self.ymd
         # covert ymd(str) into datetime obj:
         dt_obj = dt.strptime(ymd, '%Y-%m-%d')
         return dt_obj
 
-    def add_entry(self):
-        sqlstr = ''
-
-        if self.in_ex == 'Income':
-            sqlstr = '''
-            INSERT INTO Income
-                    (description,ymd,income,account,record_time,SubCat_id)
-                VALUES
-                    (?,?,?,?,?,?);
-            '''
-        elif self.in_ex == 'Expense':
-            sqlstr = '''
-            INSERT INTO Expense
-                    (description,ymd,expense,account,record_time,SubCat_id)
-                VALUES
-                    (?,?,?,?,?,?);
-            '''
-        cur.execute(sqlstr, (self.description,
-                             self.ymd, self.price, self.account, self.record_time, self.sub_id))
+    def add_entry(self, in_ex, description, ymd, price, account, record_time, sub_id):
+        '''
+        Takes 7 params: in_ex, description, ymd, price, account, record_time, sub_id
+        '''
+        sqlstr = f'''
+        INSERT INTO {in_ex}
+                (description,ymd,price,account,record_time,SubCat_id)
+            VALUES
+                (?,?,?,?,?,?);
+        '''
+        cur.execute(sqlstr, (description, ymd, price,
+                             account, record_time, sub_id))
         conn.commit()
 
-    def delete_entry(self):
-        if self.in_ex == 'Income':
-            sqlstr = 'DELETE FROM Income WHERE record_time=?'
-        elif self.in_ex == 'Expense':
-            sqlstr = 'DELETE FROM Expense WHERE record_time=?'
-        cur.execute(sqlstr, (self.record_time, ))
+    def delete_entry(self, id, in_ex):
+        '''
+        Takes 2 params: id, in_ex
+        Deletes one entry from DB with specified id
+        '''
+        sqlstr = f'DELETE FROM {in_ex} WHERE id=?'
+        cur.execute(sqlstr, (id, ))
         conn.commit()
 
+    def get_entry(self, id, in_ex):
+        '''
+        Takes 2 params: id, in_ex
+        Returns a tuple containing 7 elements:
+        id,description,ymd,price,account,record_time,SubCat_id
+        '''
+        sqlstr = f'''SELECT id,description,ymd,price,account,record_time,SubCat_id
+                    FROM {in_ex} WHERE id=?'''
 
-class Expense(Entry):
-    pass
+        for entry in cur.execute(sqlstr, (id, )):
+            search = entry  # returns a tuple
 
+        return search
 
-class Income(Entry):
-    pass
+    def update_entry(self, id, in_ex):
+        '''
+        Takes 2 params: id, in_ex
+        '''
+        # get old info
+        old = self.get_entry(id, in_ex)
 
+        # to be connected to User Interface
+        new = input('description, ymd, price, account, subcat: ').split(',')
 
+        # either inputs new data or keeps old data
+        description = new[0] if len(new[0]) > 0 else old[1]
+        ymd = new[1] if len(new[1]) > 0 else old[2]
+        price = int(new[2]) if len(new[2]) > 0 else old[3]
+        account = int(new[3]) if len(new[3]) > 0 else old[4]
+        sub_id = int(new[4]) if len(new[4]) > 0 else old[6]
+
+        sqlstr = f'''UPDATE {in_ex} SET
+                    (description,ymd,price,account,SubCat_id)=(?,?,?,?,?)
+                    WHERE id=?'''
+
+        cur.execute(sqlstr, (description, ymd, price,
+                             account, sub_id, old[0]))
+        conn.commit()
+
+        
 class Insights():
     def get_sum(self, timespan, category):
         pass
@@ -88,18 +114,6 @@ class Visualization():
     def show_tree(self):
         # IMPORTANT: import png
         pass
-
-
-class GoogleReview():
-    # goal [1]: 從地區選出好的店，再建議給使用者 (爬 店家評分 和 評論的文字)
-    # goal [2]: 提供客製化的建議 (從消費習慣之類的分析... 要再討論)
-
-    # import: bs4, requests, selenium
-
-    # goal[2] may need to do the ones below:
-    # use data from class: Insights()
-
-    pass
 
 
 def select_main_cat():
@@ -139,26 +153,37 @@ def select_sub_cat(chosen_main_id):
 
 # Below only for testing: to add new record entries...
 '''
-num = 0
-for i in range(1):
-    if i==0 or 12<=i<=14:
-        continue
-    else:
-        num += 1
-        month = rdm.randint(1,12)
-        month = str(month) if month >= 10 else '0'+str(month)
-        day = rdm.randint(1,28)
-        day = str(day) if day >= 10 else '0'+str(day)
-        date = '2020-' + month + '-' + day
-        price = rdm.randint(10,10000)
-        timenow = dt.strptime(dt.now().isoformat(), '%Y-%m-%dT%H:%M:%S.%f')  # YYYY-MM-DD HH:MM:SS.SSS
-        test = Entry('Income', 'test-'+str(199+num), date, price, 'cash', str(timenow), i)
+test = Entry()
 
-        test.add_entry()
+num = 1
+for i in range(1000):
 
+    num += 1
+    description = 'EX-' + str(num)
+    month = rdm.randint(1,12)
+    month = str(month) if month >= 10 else '0'+str(month)
+    day = rdm.randint(1,28)
+    day = str(day) if day >= 10 else '0'+str(day)
+    date = '2020-' + month + '-' + day
+    price = rdm.randint(10,10000)
+    payment = rdm.randint(1,4)
+    timenow = dt.strptime(dt.now().isoformat(), '%Y-%m-%dT%H:%M:%S.%f')  # YYYY-MM-DD HH:MM:SS.SSS
+    while True:
+        cat = rdm.randint(1,27)
+        if 12<=cat<=14:
+            continue
+        else:
+            break
 
-#test2 = Entry('Income', 'test 003', '2020-02-24', 139, 'cash', 24)
-
-#test4.delete_entry(2)
+    test.add_entry('Expense',description,date,price,payment,timenow,cat)
 '''
+# should return a tuple
+#x = test.get_entry(1, 'Expense')
+#print(x)
+
+#test.update_entry(1, 'Expense')
+
+#test.add_entry('Income','test-100','1980-01-01',25,1,'N\\A',5)
+
+#test.delete_entry(1, 'Income')
 cur.close()
