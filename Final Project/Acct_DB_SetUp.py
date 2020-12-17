@@ -30,7 +30,7 @@ CREATE TABLE IF NOT EXISTS SubCat(
 
 CREATE TABLE IF NOT EXISTS Method(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
-    Method TEXT UNIQUE
+    PayMethod TEXT UNIQUE
 );
 
 CREATE TABLE IF NOT EXISTS Expense(
@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS Expense(
     description TEXT,
     ymd TEXT,
     price INTEGER,
-    account INTEGER,
+    method INTEGER,
     record_time TEXT,
     SubCat_id INTEGER
 );
@@ -48,7 +48,7 @@ CREATE TABLE IF NOT EXISTS Income(
     description TEXT,
     ymd TEXT,
     price INTEGER,
-    account INTEGER,
+    method INTEGER,
     record_time TEXT,
     SubCat_id INTEGER
 );
@@ -149,7 +149,7 @@ INSERT OR IGNORE INTO
 
 cur.executescript('''
 INSERT OR IGNORE INTO
-    Method(Method)
+    Method(PayMethod)
     VALUES
         ('現金'),
         ('信用卡'),
