@@ -28,11 +28,16 @@ CREATE TABLE IF NOT EXISTS SubCat(
     MainCat_id INTEGER
 );
 
+CREATE TABLE IF NOT EXISTS Method(
+    id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
+    Method TEXT UNIQUE
+);
+
 CREATE TABLE IF NOT EXISTS Expense(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
     description TEXT,
     ymd TEXT,
-    expense INTEGER,
+    price INTEGER,
     account INTEGER,
     record_time TEXT,
     SubCat_id INTEGER
@@ -42,7 +47,7 @@ CREATE TABLE IF NOT EXISTS Income(
     id INTEGER NOT NULL PRIMARY KEY AUTOINCREMENT UNIQUE,
     description TEXT,
     ymd TEXT,
-    income INTEGER,
+    price INTEGER,
     account INTEGER,
     record_time TEXT,
     SubCat_id INTEGER
@@ -140,4 +145,15 @@ INSERT OR IGNORE INTO
         ('建置中2',9)
     ;
 
+''')
+
+cur.executescript('''
+INSERT OR IGNORE INTO
+    Method(Method)
+    VALUES
+        ('現金'),
+        ('信用卡'),
+        ('Debit卡'),
+        ('行動支付')
+    ;
 ''')
