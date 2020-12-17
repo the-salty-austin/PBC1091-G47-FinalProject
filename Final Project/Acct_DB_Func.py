@@ -27,18 +27,18 @@ class Entry():
         dt_obj = dt.strptime(ymd, '%Y-%m-%d')
         return dt_obj
 
-    def add_entry(self, in_ex, description, ymd, price, account, record_time, sub_id):
+    def add_entry(self, in_ex, description, ymd, price, method, record_time, sub_id):
         '''
-        Takes 7 params: in_ex, description, ymd, price, account, record_time, sub_id
+        Takes 7 params: in_ex, description, ymd, price, method, record_time, sub_id
         '''
         sqlstr = f'''
         INSERT INTO {in_ex}
-                (description,ymd,price,account,record_time,SubCat_id)
+                (description,ymd,price,method,record_time,SubCat_id)
             VALUES
                 (?,?,?,?,?,?);
         '''
         cur.execute(sqlstr, (description, ymd, price,
-                             account, record_time, sub_id))
+                             method, record_time, sub_id))
         conn.commit()
 
     def delete_entry(self, id, in_ex):
@@ -54,9 +54,9 @@ class Entry():
         '''
         Takes 2 params: id, in_ex
         Returns a tuple containing 7 elements:
-        id,description,ymd,price,account,record_time,SubCat_id
+        id,description,ymd,price,method,record_time,SubCat_id
         '''
-        sqlstr = f'''SELECT id,description,ymd,price,account,record_time,SubCat_id
+        sqlstr = f'''SELECT id,description,ymd,price,method,record_time,SubCat_id
                     FROM {in_ex} WHERE id=?'''
 
         for entry in cur.execute(sqlstr, (id, )):
@@ -72,24 +72,32 @@ class Entry():
         old = self.get_entry(id, in_ex)
 
         # to be connected to User Interface
-        new = input('description, ymd, price, account, subcat: ').split(',')
+        new = input('description, ymd, price, method, subcat: ').split(',')
 
         # either inputs new data or keeps old data
         description = new[0] if len(new[0]) > 0 else old[1]
         ymd = new[1] if len(new[1]) > 0 else old[2]
         price = int(new[2]) if len(new[2]) > 0 else old[3]
-        account = int(new[3]) if len(new[3]) > 0 else old[4]
+        method = int(new[3]) if len(new[3]) > 0 else old[4]
         sub_id = int(new[4]) if len(new[4]) > 0 else old[6]
 
         sqlstr = f'''UPDATE {in_ex} SET
-                    (description,ymd,price,account,SubCat_id)=(?,?,?,?,?)
+                    (description,ymd,price,method,SubCat_id)=(?,?,?,?,?)
                     WHERE id=?'''
 
         cur.execute(sqlstr, (description, ymd, price,
-                             account, sub_id, old[0]))
+                             method, sub_id, old[0]))
         conn.commit()
 
-        
+
+class Expense(Entry):
+    pass
+
+
+class Income(Entry):
+    pass
+
+
 class Insights():
     def get_sum(self, timespan, category):
         pass
@@ -155,18 +163,18 @@ def select_sub_cat(chosen_main_id):
 '''
 test = Entry()
 
-num = 1
+num = 0
 for i in range(1000):
 
     num += 1
-    description = 'EX-' + str(num)
+    description = 'IC-' + str(num)
     month = rdm.randint(1,12)
     month = str(month) if month >= 10 else '0'+str(month)
     day = rdm.randint(1,28)
     day = str(day) if day >= 10 else '0'+str(day)
     date = '2020-' + month + '-' + day
     price = rdm.randint(10,10000)
-    payment = rdm.randint(1,4)
+    method = rdm.randint(1,4)
     timenow = dt.strptime(dt.now().isoformat(), '%Y-%m-%dT%H:%M:%S.%f')  # YYYY-MM-DD HH:MM:SS.SSS
     while True:
         cat = rdm.randint(1,27)
@@ -175,7 +183,7 @@ for i in range(1000):
         else:
             break
 
-    test.add_entry('Expense',description,date,price,payment,timenow,cat)
+    test.add_entry('Income',description,date,price,method,timenow,cat)
 '''
 # should return a tuple
 #x = test.get_entry(1, 'Expense')
