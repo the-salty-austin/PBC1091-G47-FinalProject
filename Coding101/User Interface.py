@@ -4,6 +4,7 @@ from tkinter import Tk, Canvas
 import tkinter.messagebox
 from PIL import Image, ImageTk
 from datetime import datetime as dt
+import datetime
 from matplotlib import pyplot
 import time
 
@@ -64,6 +65,7 @@ for i in way:
 MAT_FONT = ('UD Digi Kyokasho NK-R', 22, 'bold')
 LARGE_FONT = ('UD Digi Kyokasho NK-R', 18, 'bold')
 MEDIUM_FONT = ('UD Digi Kyokasho NK-R', 15, 'bold')
+MEDIUM_FONT2 = ('UD Digi Kyokasho NK-R', 15)
 SMALL_FONT = ('UD Digi Kyokasho NK-R', 11)
 SMALLER_FONT = ('UD Digi Kyokasho NK-R', 9)
 CONGRATS_FONT = ('UD Digi Kyokasho NK-R', 20)
@@ -120,6 +122,26 @@ class StartPage(tk.Frame):
         button2 = tk.Button(self, text='設定花費預算', font=SMALL_FONT, command=lambda: root.show_frame(GoalPage)).pack()
         button3 = tk.Button(self, text='檢視收支狀況', font=SMALL_FONT, command=lambda: root.show_frame(CheckPage)).pack()
         button4 = tk.Button(self, text='好好犒賞自己吧！', font=SMALL_FONT, command=lambda: root.show_frame(RewardPage)).pack()
+        
+        today = datetime.date.today().strftime("%Y-%m-%d")
+        ago = (datetime.date.today() + datetime.timedelta(-30)).strftime("%Y-%m-%d")
+
+        consumption = func.period_avg(ago, today)
+        space11 = tk.Label(self, text='').pack()
+        avg_label = tk.Label(self, text='    過去30天您的消費為：$'+str(round(consumption*30,2))+'    ', font=MEDIUM_FONT, fg='snow', bg='dark goldenrod').pack()
+        if consumption >= 762:
+            tree_label = tk.Label(self, text='達到了2019年人平均月消費22881元，樹很開心！開得很茂盛！', font=LARGE_FONT, fg='PaleVioletRed').pack()
+            photo = tk.PhotoImage(file='tree.png')
+            Artwork = tk.Label(self, image=photo)
+            Artwork.photo = photo
+            Artwork.pack()
+
+        else:
+            die_label = tk.Label(self, text='沒有達到2019年人平均月消費22881元，樹很傷心，枯掉了。', font=SMALLER_FONT, fg='grey').pack()
+            photo = tk.PhotoImage(file='die.png')
+            Artwork = tk.Label(self, image=photo)
+            Artwork.photo = photo
+            Artwork.pack()
 
 class InputPage(tk.Frame):
     def __init__(self, parent, root):
