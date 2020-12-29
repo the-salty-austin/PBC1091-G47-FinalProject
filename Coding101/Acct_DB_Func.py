@@ -99,6 +99,15 @@ class Entry():
         self.cur.execute(sqlstr, (budget,year,month))
         self.conn.commit()
 
+    def output_all_budgets(self):
+        sqlstr = 'SELECT year, month, amt FROM Budget'
+        out = []
+
+        for row in self.cur.execute(sqlstr):
+            out.append((row[0],row[1],row[2]))
+
+        return out
+
     def output_expense_categories(self):
         cat_dict = {}
 
