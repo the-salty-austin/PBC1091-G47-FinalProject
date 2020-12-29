@@ -2,6 +2,11 @@ import sqlite3
 from datetime import datetime as dt
 import random as rdm
 
+#self.conn = sqlite3.connect('Database\\book_keeping.sqlite')
+#self.cur = self.conn.cursor()
+
+
+
 class Entry():
     def __init__(self):
         self.conn = sqlite3.connect('Database\\book_keeping.sqlite')
@@ -121,14 +126,14 @@ class Entry():
     def output_income_categories(self):
         cat_lst = []
 
-        for i in range(9,12):
+        for i in range(1000,1003):
             sqlstr = f'''SELECT MainCat.MainCat, MainCat.id
                         FROM MainCat
                         WHERE MainCat.id = {i}'''
 
             for output in self.cur.execute(sqlstr):
                 cat_lst.append((output[0],output[1]))
-        print(cat_lst)
+
         return cat_lst
 
 
@@ -157,116 +162,21 @@ class Entry():
         
         return pay_lst
 
-    
-
 
 class Recommendation():
+    def __init__(self):
+        self.conn = sqlite3.connect('Database\\scores.sqlite')
+        self.cur = self.conn.cursor()
   
-    def get_restaurants(id=1):
-        conn = sqlite3.connect('Database\\scores.sqlite')
-        cur = conn.cursor()
-        
+    def get_restaurants(self, id=1):
+        #conn = sqlite3.connect('C:\\Users\\user\\Downloads\\scores.sqlite')
+        #cur = conn.cursor()
         out = []
-        
         sqlstr = f'''SELECT Data.name, Data.score, Data.price, Data.geo, Cuisine
                      FROM Data JOIN Cuisine ON Cuisine.id = Data.cuisineID
                      WHERE Cuisine.id = {id}
                      ORDER BY Data.score DESC LIMIT 20'''
-        for row in cur.execute(sqlstr):
+        for row in self.cur.execute(sqlstr):
             out.append(row)
 
         return out
-
-
-class Visualization():
-    def show_bar_chart(self):
-        pass
-
-    def show_pie_chart(self):
-        pass
-
-    def show_tree(self):
-        # IMPORTANT: import png
-        pass
-
-
-def select_main_cat():
-    maincats = {}
-    sqlstr = 'SELECT id, MainCat FROM MainCat'
-    for cat in self.cur.execute(sqlstr):
-        cat_id = cat[0]
-        cat_name = cat[1]
-        print(cat_id, cat_name)
-        if cat_id not in maincats.keys():
-            maincats[cat_id] = cat_name
-
-    user_choice = input('選擇記帳主類別：')  # to be replaced with drop down options
-    for cat_id, name in maincats.items():
-        if name == user_choice:
-            return cat_id
-
-
-def select_sub_cat(chosen_main_id):
-    subcats = {}
-    sqlstr = 'SELECT id, SubCat, MainCat_id FROM SubCat'
-
-    for subcat in self.cur.execute(sqlstr):
-        maincat_id = subcat[2]
-        if chosen_main_id == maincat_id:
-            subcat_id = subcat[0]
-            subcat_name = subcat[1]
-            print(subcat_id, subcat_name, maincat_id)
-            if subcat_id not in subcats.keys():
-                subcats[subcat_id] = subcat_name
-
-    user_choice = input('選擇記帳子類別：')  # to be replaced with drop down options
-    for sub_id, subname in subcats.items():
-        if subname == user_choice:
-            return sub_id
-
-
-# Below only for testing: to add new record entries...
-
-# test = Entry()
-
-# num = 0
-# for i in range(150):
-
-#     num += 1
-#     description = 'EX-' + str(num)
-#     month = rdm.randint(1,12)
-#     month = str(month) if month >= 10 else '0'+str(month)
-#     day = rdm.randint(1,28)
-#     day = str(day) if day >= 10 else '0'+str(day)
-#     date = '2020-' + month + '-' + day
-#     price = rdm.randint(10,10000)
-#     method = rdm.randint(1,4)
-#     timenow = dt.strptime(dt.now().isoformat(), '%Y-%m-%dT%H:%M:%S.%f')  # YYYY-MM-DD HH:MM:SS.SSS
-#     cui_id = rdm.randint(1,15)
-#     #cui_id = 16
-#     # while True:
-#     #     cat = rdm.randint(1,23)
-#     #     if 12<=cat<=14:
-#     #         continue
-#     #     else:
-#     #         break
-#     cat = rdm.randint(1,18)
-
-#     test.add_entry('Expense',description,cui_id,date,price,method,timenow,cat)
-
-# should return a tuple
-#x = test.get_entry(1, 'Expense')
-#print(x)
-
-#test.update_entry(1, 'Expense')
-
-#test.add_entry('Income','test-100','1980-01-01',25,1,'N\\A',5)
-
-#test.delete_entry(1, 'Income')
-# test = Entry()
-# cats = test.output_paymethod_categories()
-# print(cats)
-# #test.update_budget(2020,12,10300)
-
-# test2 = Recommendation()
-# test2.get_restaurants(1)
