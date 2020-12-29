@@ -535,30 +535,30 @@ class CheckPage(tk.Frame):
 
                 close_record_button = tk.Button(self, text='關閉此筆紀錄', font=SMALLER_FONT,command=lambda:[close_record_func(),enable()])
                 close_record_button.place(x=30,y=200)
-                # if selected_sort == '收入':
-                #     colors = ['gold', 'yellowgreen', 'lightcoral']
-                #     in_percent_match = func.MainCat_income_pie(selected_time1, selected_time2, in_sort_number_list)
-                #     in_percent = []
-                #     for i in in_percent_match:
-                #         in_percent += [i[1]]
-                #     pyplot.rcParams['font.sans-serif'] = ['SimHei']
-                #     pyplot.pie(in_percent, labels=in_sort_english, colors=colors, autopct = '%1.1f%%', startangle=0)
-                #     pyplot.title('INCOME')
-                #     pyplot.show()
+                if selected_sort == '收入':
+                    colors = ['gold', 'yellowgreen', 'lightcoral']
+                    in_percent_match = func.MainCat_income_pie(selected_time1, selected_time2, in_sort_number_list)
+                    in_percent = []
+                    for i in in_percent_match:
+                        in_percent += [i[1]]
+                    pyplot.rcParams['font.sans-serif'] = ['SimHei']
+                    pyplot.pie(in_percent, labels=in_sort_english, colors=colors, autopct = '%1.1f%%', startangle=0)
+                    pyplot.title('INCOME')
+                    pyplot.show()
 
-                # elif selected_sort == '支出':
-                #     colors = ['gold', 'yellowgreen', 'lightcoral', 'lightskyblue', 'lavender', 'orange', 'Navy', 'yellow']
-                #     ex_percent_match = func.MainCat_expense_pie(selected_time1, selected_time2, out_sort_number_list)
-                #     ex_percent = []
-                #     out_labels = []
-                #     for i in ex_percent_match:
-                #         ex_percent += [i[1]]
-                #         out_labels += [i[0]]
+                elif selected_sort == '支出':
+                    colors = ['gold', 'yellowgreen', 'lightcoral', 'lightskyblue', 'lavender', 'orange', 'Navy', 'yellow']
+                    ex_percent_match = func.MainCat_expense_pie(selected_time1, selected_time2, out_sort_number_list)
+                    ex_percent = []
+                    out_labels = []
+                    for i in ex_percent_match:
+                        ex_percent += [i[1]]
+                        out_labels += [i[0]]
                         
-                #     pyplot.rcParams['font.sans-serif'] = ['SimHei']
-                #     pyplot.pie(ex_percent, labels=out_labels, colors=colors, autopct = '%1.1f%%', startangle=0)
-                #     pyplot.title('EXPENSE')
-                #     pyplot.show()
+                    pyplot.rcParams['font.sans-serif'] = ['SimHei']
+                    pyplot.pie(ex_percent, labels=out_labels, colors=colors, autopct = '%1.1f%%', startangle=0)
+                    pyplot.title('EXPENSE')
+                    pyplot.show()
         
         confirm_check_button = tk.Button(self, text='確認查詢', font=SMALLER_FONT, command=lambda:[call_record_func(),disable()])
         confirm_check_button.pack()
