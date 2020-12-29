@@ -2,11 +2,6 @@ import sqlite3
 from datetime import datetime as dt
 import random as rdm
 
-#self.conn = sqlite3.connect('Database\\book_keeping.sqlite')
-#self.cur = self.conn.cursor()
-
-
-
 class Entry():
     def __init__(self):
         self.conn = sqlite3.connect('Database\\book_keeping.sqlite')
