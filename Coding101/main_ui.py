@@ -126,10 +126,10 @@ class StartPage(tk.Frame):
         today = datetime.date.today().strftime("%Y-%m-%d")
         ago = (datetime.date.today() + datetime.timedelta(-30)).strftime("%Y-%m-%d")
 
-        consumption = func.period_avg(ago, today)
+        consumption = func.period_sum(ago, today)
         space11 = tk.Label(self, text='').pack()
-        avg_label = tk.Label(self, text='    過去30天您的消費為：$'+str(round(consumption*30,2))+'    ', font=MEDIUM_FONT, fg='snow', bg='dark goldenrod').pack()
-        if consumption >= 762:
+        avg_label = tk.Label(self, text='    過去30天您的消費為：$'+str(consumption)+'    ', font=MEDIUM_FONT, fg='snow', bg='dark goldenrod').pack()
+        if consumption >= 22881:
             tree_label = tk.Label(self, text='達到了2019年人平均月消費22881元，樹很開心！開得很茂盛！', font=LARGE_FONT, fg='PaleVioletRed').pack()
             photo = tk.PhotoImage(file='tree.png')
             Artwork = tk.Label(self, image=photo)
